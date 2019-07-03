@@ -2,6 +2,13 @@
 # dataset
 /data
 
+# models
+*.ckpt
+*.pth
+
+# practice
+/data_analysis
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
