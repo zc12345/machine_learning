@@ -23,7 +23,7 @@ import hashlib
 
 def download_data(url, dataset_dir):
     if not os.path.isdir(dataset_dir):
-        os.mkdir(dataset_dir)
+        os.makedirs(dataset_dir)
     filename = url.split('/')[-1]
     tgz_path = os.path.join(dataset_dir, filename)
     urllib.request.urlretrieve(url, tgz_path)
@@ -64,8 +64,9 @@ def vis_data(data):
 
 def show_corr(data):
     corr_matrix = data.corr()
+    print(corr_matrix["median_house_value"].sort_values(ascending=False))
     attributes = ["median_house_value", "median_income", "total_rooms", "housing_median_age"]
-    scatter_matrix(corr_matrix[attributes], figsize=(12,8))
+    scatter_matrix(data[attributes], figsize=(12,8))
     save_fig("scatter_mat")
     plt.show()
 
@@ -94,6 +95,7 @@ def split_train_test_by_ids(data, test_ratio, id_column):
 
 def stratified_split_train_test(data, test_ratio):
     # by income
+    data = data.copy()
     data["income_cat"] = np.ceil(data["median_income"] / 1.5)
     data["income_cat"].where(data["income_cat"] < 5, 5.0, inplace=True) # above 5 inplace with 5.0
     # print(data["income_cat"].value_counts())
@@ -113,9 +115,9 @@ def stratified_split_train_test(data, test_ratio):
 
 def main():
     download_root = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
-    # download_url = download_root + "datasets/housing/housing.tgz"
+    download_url = download_root + "datasets/housing/housing.tgz"
     dataset_dir = os.path.join("dataset", "housing")
-    # download_data(download_url, dataset_dir)
+#    download_data(download_url, dataset_dir)
     data = load_data(dataset_dir)
     np.random.seed(50)
 
@@ -129,8 +131,8 @@ def main():
     # # train_set, test_set = split_train_test_by_ids(data_with_id, 0.2, "id")
 
     # stratified split
-    train_set, test_set = stratified_split_train_test(data, 0.2)
-    # show_corr(data)
+#    train_set, test_set = stratified_split_train_test(data, 0.2)
+    show_corr(data)
     data.plot(kind="scatter", x="median_income", y="median_house_value",
                  alpha=0.1)
     plt.axis([0, 16, 0, 550000])
